@@ -1,5 +1,3 @@
-# aks-poc-001
-
 ## Overview
 
 This repository contains Kubernetes manifests for deploying a **Node.js 24** application on **Azure Kubernetes Service (AKS)**. The manifests demonstrate three different container image sourcing strategies — from a private Azure Container Registry (ACR), from the authenticated Red Hat registry, and from the publicly accessible Red Hat Universal Base Image (UBI) registry. Each approach targets a different team setup or compliance requirement.
