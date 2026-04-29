@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodejs-24-v2
+  namespace: indra-poc
+  labels:
+    app: nodejs-24-v2
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nodejs-24-v2
+  template:
+    metadata:
+      labels:
+        app: nodejs-24-v2
+    spec:
+      containers:
+        - name: nodejs-24-v2
+          image: registry.redhat.io/rhel8/nodejs-24
+          imagePullPolicy: Always
+          command: ["node", "-e", "const http=require('http');http.createServer((req,res)=>{res.writeHead(200);res.end('OK - nodejs-24-v2 running\\n');}).listen(8080);console.log('Server running on port 8080');"]
+          ports:
+            - containerPort: 8080
+          env:
+            - name: NODE_ENV
+              value: "production"
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+      imagePullSecrets:
+        - name: redhat-pull-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodejs-24-v2-svc
+  namespace: indra-poc
+  labels:
+    app: nodejs-24-v2
+spec:
+  type: LoadBalancer
+  selector:
+    app: nodejs-24-v2
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
