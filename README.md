@@ -58,12 +58,12 @@ This manifest deploys the application using the official **Red Hat Node.js 24** 
 |---|---|
 | **Namespace** | Uses existing `indra-poc` (not created) |
 | **Image** | `registry.access.redhat.com/ubi8/nodejs-24` |
-| **Image Pull Secret** | `acr-secret` |
+| **Image Pull Secret** | None (public registry) |
 | **Replicas** | 2 |
 | **Service Type** | LoadBalancer |
 
 **Description:**  
-This manifest deploys the application using the **Red Hat Universal Base Image (UBI)** pulled from `registry.access.redhat.com`, which is **publicly accessible without authentication**. UBI images are freely redistributable and designed for container-first workloads. The `acr-secret` is listed as an image pull secret in this manifest (inherited from the cluster configuration), but it is not required for pulling this specific public image. The namespace `indra-poc` must already exist.
+This manifest deploys the application using the **Red Hat Universal Base Image (UBI)** pulled from `registry.access.redhat.com`, which is **publicly accessible without authentication**. UBI images are freely redistributable and designed for container-first workloads. No image pull secret is required — the `imagePullSecrets` block is intentionally commented out in this manifest. The namespace `indra-poc` must already exist.
 
 **When to use:**
 - You want a **freely available, no-subscription** Red Hat-based base image.
@@ -80,9 +80,29 @@ This manifest deploys the application using the **Red Hat Universal Base Image (
 | **Image Registry** | Private ACR (S2I) | `registry.redhat.io` | `registry.access.redhat.com` |
 | **Authentication Required** | ACR secret | Red Hat subscription | None (public) |
 | **Creates Namespace** | ✅ Yes | ❌ No | ❌ No |
-| **Pull Secret** | `acr-secret` | `redhat-pull-secret` | `acr-secret` |
+| **Pull Secret** | `acr-secret` | `redhat-pull-secret` | None (public) |
 | **Best For** | Custom/hardened images | Enterprise + RH subscription | Dev/test, OSS, no subscription |
 | **Apply Order** | First | After namespace exists | After namespace exists |
+
+---
+
+## Dev Container
+
+This repository includes a `.devcontainer` configuration for a ready-to-use **AKS development environment**. It is based on Ubuntu 24.04 and includes:
+
+| Tool | Details |
+|---|---|
+| **Azure CLI** | Latest, with the `aks-preview` extension |
+| **kubectl** | Latest (via `kubectl-helm-minikube` feature) |
+| **Helm** | Latest |
+| **Azure Developer CLI (`azd`)** | Latest |
+
+**VS Code extensions pre-installed:**
+- Kubernetes Tools (`ms-kubernetes-tools.vscode-kubernetes-tools`)
+- Azure Resource Groups (`ms-azuretools.vscode-azureresourcegroups`)
+- AKS Tools (`ms-azuretools.vscode-aks-tools`)
+
+Open the repository in [GitHub Codespaces](https://codespaces.new/oaviles/aks-poc-001) or in a local VS Code Dev Container to get started with all tools pre-configured.
 
 ---
 
@@ -91,8 +111,9 @@ This manifest deploys the application using the **Red Hat Universal Base Image (
 - An AKS cluster up and running.
 - `kubectl` configured to point at your cluster.
 - Required Kubernetes secrets created in the `indra-poc` namespace:
-  - `acr-secret` — for pulling from your private ACR (used by v1 and v3).
+  - `acr-secret` — for pulling from your private ACR (used by v1).
   - `redhat-pull-secret` — for pulling from `registry.redhat.io` (used by v2).
+  - No pull secret needed for v3 (public UBI registry).
 
 ## Usage
 
